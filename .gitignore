@@ -1,0 +1,23 @@
+# Java
+app/target/
+*.class
+*.jar
+*.war
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Terraform
+infrastructure/terraform/.terraform/
+infrastructure/terraform/*.tfstate
+infrastructure/terraform/*.tfstate.backup
+infrastructure/terraform/*.tfvars
+
+# Docker
+.docker/
+
+# OS
+.DS_Store
+Thumbs.db

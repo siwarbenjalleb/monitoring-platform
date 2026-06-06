@@ -1,0 +1,54 @@
+---
+- name: Install and configure monitoring stack
+  hosts: monitoring
+  become: true
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install required packages
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - git
+        state: present
+
+    - name: Install Docker
+      shell: curl -fsSL https://get.docker.com | sh
+      args:
+        creates: /usr/bin/docker
+
+    - name: Add ubuntu user to docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
+
+    - name: Install Docker Compose plugin
+      apt:
+        name: docker-compose-plugin
+        state: present
+
+    - name: Clone the project repository
+      git:
+        repo: https://github.com/siwarbenjalleb/monitoring-platform.git
+        dest: /opt/monitoring-platform
+        force: yes
+
+    - name: Start the monitoring stack
+      shell: docker compose up -d --build
+      args:
+        chdir: /opt/monitoring-platform
+
+    - name: Verify containers are running
+      shell: docker ps
+      register: docker_output
+
+    - name: Show running containers
+      debug:
+        msg: "{{ docker_output.stdout }}"
